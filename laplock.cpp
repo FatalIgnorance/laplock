@@ -26,6 +26,10 @@
 namespace laplock {
 namespace {
 
+auto start_time = std::chrono::high_resolution_clock::now();
+auto t5000ms = std::chrono::milliseconds(5000);
+auto start_time5 = start_time + t5000ms;
+
 class LogLine {
 public:
 	LogLine() {
@@ -92,6 +96,14 @@ static void systemError(wchar_t* what)
 
 static LRESULT CALLBACK windowProcedure(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+
+	auto current_time = std::chrono::high_resolution_clock::now();
+
+	if (start_time5 > current_time) {
+		LogLine() << "Initial startup wait period not ended";
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+
 	if (uMsg != WM_POWERBROADCAST || wParam != PBT_POWERSETTINGCHANGE) {
 		LogLine() << "Window received irrelevant message";
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
